@@ -208,7 +208,9 @@ const escapeHtml = s => String(s ?? "").replace(/[&<>"']/g, c => ({
 }[c]));
 
 // ---- obstacle physics constants (shared by solo & battle) ----
-const FALL_SPEED = 150;        // px / second
+const BASE_FALL_SPEED = 150;   // px / second, at the very start of a round
+const SPEED_RAMP = 1.35;       // px/s that fall speed gains per second the round has run
+const MAX_FALL_SPEED = 430;    // cap so it never becomes unreadable
 const DANGER_GAP = 0.95;       // seconds between danger-obstacle spawns
 const HOURGLASS_GAP = 4.0;     // seconds between hourglass spawns (fixed, exact)
 const FIRST_DANGER_AT = 1.0;   // first danger obstacle spawns at this many seconds
@@ -226,6 +228,14 @@ function seededValue(seed, index){
   return x - Math.floor(x);
 }
 
+// Each obstacle falls at whatever speed was in effect the moment it spawned
+// (a simple constant per obstacle, no integration needed) — so as the round
+// goes on, freshly-spawned obstacles fall progressively faster, giving a
+// steady ramp-up in difficulty over time, capped at MAX_FALL_SPEED.
+function fallSpeedAt(spawnSec){
+  return Math.min(MAX_FALL_SPEED, BASE_FALL_SPEED + SPEED_RAMP*spawnSec);
+}
+
 // Computes which obstacles are currently visible given elapsed seconds, and
 // fires onHit(type) once per obstacle the moment it crosses the judge line in
 // the player's current lane. Danger obstacles and hourglasses run on two
@@ -237,7 +247,7 @@ function stepObstacles(seed, elapsedSec, processed, currentLane, onHit){
   const visible = [];
   for(let i=0; FIRST_DANGER_AT+i*DANGER_GAP<=elapsedSec; i++){
     const spawnSec = FIRST_DANGER_AT+i*DANGER_GAP;
-    const y = -35 + FALL_SPEED*(elapsedSec-spawnSec);
+    const y = -35 + fallSpeedAt(spawnSec)*(elapsedSec-spawnSec);
     if(y > EXIT_Y) continue;
     const lane = Math.floor(seededValue(seed*2+1, i)*3);
     visible.push({lane, y, type:"obstacle"});
@@ -249,7 +259,7 @@ function stepObstacles(seed, elapsedSec, processed, currentLane, onHit){
   }
   for(let i=0; FIRST_HOURGLASS_AT+i*HOURGLASS_GAP<=elapsedSec; i++){
     const spawnSec = FIRST_HOURGLASS_AT+i*HOURGLASS_GAP;
-    const y = -35 + FALL_SPEED*(elapsedSec-spawnSec);
+    const y = -35 + fallSpeedAt(spawnSec)*(elapsedSec-spawnSec);
     if(y > EXIT_Y) continue;
     const lane = Math.floor(seededValue(seed*2+2, i)*3);
     visible.push({lane, y, type:"hourglass"});
