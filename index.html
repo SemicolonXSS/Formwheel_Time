@@ -121,6 +121,8 @@ th{font-size:13px;color:#777e8d}
     </div>
 
     <div id="soloSetup">
+      <label class="small">닉네임 (리더보드용)</label>
+      <input id="soloNickname" maxlength="12" placeholder="최대 12자" style="margin-bottom:10px">
       <button id="soloStart">▶️ Solo 시작</button>
     </div>
 
@@ -293,6 +295,11 @@ window.addEventListener("keydown", e=>{
 
 $("connectionStatus").textContent = "Firebase 연결됨 ✅";
 
+const savedName = localStorage.getItem("formwheel_time_name");
+if(savedName){
+  $("soloNickname").value = savedName;
+}
+
 function showGame(){
   $("gameCard").classList.remove("hidden");
   window.scrollTo({top:$("gameCard").offsetTop-10,behavior:"smooth"});
@@ -398,7 +405,8 @@ function move(dir){
 }
 
 async function saveLeaderboard(seconds){
-  const name=(localStorage.getItem("formwheel_time_name") || prompt("리더보드에 사용할 닉네임을 입력하세요") || "익명").trim().slice(0,12);
+  const typed=($("soloNickname").value||"").trim();
+  const name=(typed || localStorage.getItem("formwheel_time_name") || prompt("리더보드에 사용할 닉네임을 입력하세요") || "익명").trim().slice(0,12);
   if(!name)return;
   localStorage.setItem("formwheel_time_name",name);
 
