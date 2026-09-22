@@ -208,40 +208,55 @@ const escapeHtml = s => String(s ?? "").replace(/[&<>"']/g, c => ({
 }[c]));
 
 // ---- obstacle physics constants (shared by solo & battle) ----
-const FALL_SPEED = 150;      // px / second
-const SPAWN_GAP = 0.95;      // seconds between spawns
-const JUDGE_Y = 470;         // collision line (px from top of arena)
-const EXIT_Y = 560;          // obstacle removed from view past this point
+const FALL_SPEED = 150;        // px / second
+const DANGER_GAP = 0.95;       // seconds between danger-obstacle spawns
+const HOURGLASS_GAP = 4.0;     // seconds between hourglass spawns (fixed, exact)
+const FIRST_DANGER_AT = 1.0;   // first danger obstacle spawns at this many seconds
+const FIRST_HOURGLASS_AT = 4.0;// first hourglass spawns at this many seconds
+const JUDGE_Y = 470;           // collision line (px from top of arena)
+const EXIT_Y = 560;            // obstacle removed from view past this point
 
-function generateObstacleSchedule(count){
-  const arr=[];
-  for(let i=0;i<count;i++){
-    arr.push({
-      t:Math.round((1.0+i*SPAWN_GAP)*1000),
-      lane:Math.floor(Math.random()*3),
-      type:Math.random()<.28?"hourglass":"obstacle"
-    });
-  }
-  return arr;
+// Deterministic pseudo-random in [0,1), a pure function of (seed, index).
+// Same seed+index always gives the same value, so every client in a battle
+// room computes identical obstacle lanes without needing to sync a growing
+// list through the database — and it never "runs out" since it's computed
+// on demand for whatever index the current elapsed time needs.
+function seededValue(seed, index){
+  const x = Math.sin(seed*12.9898 + index*78.233) * 43758.5453;
+  return x - Math.floor(x);
 }
 
-// Computes which obstacles are currently visible given elapsed seconds,
-// and fires onHit(type) once per obstacle the moment it crosses the judge line
-// in the player's current lane. Using elapsed-time math (rather than a single
-// mutable "current obstacle") means several obstacles can be mid-fall at once
-// without one spawn silently overwriting/erasing the previous one.
-function stepObstacles(schedule, elapsedSec, processed, currentLane, onHit){
+// Computes which obstacles are currently visible given elapsed seconds, and
+// fires onHit(type) once per obstacle the moment it crosses the judge line in
+// the player's current lane. Danger obstacles and hourglasses run on two
+// independent, indefinitely-extending tracks (each spawn time is derived
+// directly from its index, not stored in an array), so gameplay never stalls
+// no matter how long a round runs, and the hourglass cadence stays exactly
+// fixed regardless of how many danger obstacles have spawned.
+function stepObstacles(seed, elapsedSec, processed, currentLane, onHit){
   const visible = [];
-  for(let i=0;i<schedule.length;i++){
-    const o = schedule[i];
-    const spawnSec = o.t/1000;
-    if(elapsedSec < spawnSec) continue;
+  for(let i=0; FIRST_DANGER_AT+i*DANGER_GAP<=elapsedSec; i++){
+    const spawnSec = FIRST_DANGER_AT+i*DANGER_GAP;
     const y = -35 + FALL_SPEED*(elapsedSec-spawnSec);
     if(y > EXIT_Y) continue;
-    visible.push({lane:o.lane, y, type:o.type});
-    if(y>=JUDGE_Y && !processed.has(i)){
-      processed.add(i);
-      if(o.lane===currentLane) onHit(o.type);
+    const lane = Math.floor(seededValue(seed*2+1, i)*3);
+    visible.push({lane, y, type:"obstacle"});
+    const key="d"+i;
+    if(y>=JUDGE_Y && !processed.has(key)){
+      processed.add(key);
+      if(lane===currentLane) onHit("obstacle");
+    }
+  }
+  for(let i=0; FIRST_HOURGLASS_AT+i*HOURGLASS_GAP<=elapsedSec; i++){
+    const spawnSec = FIRST_HOURGLASS_AT+i*HOURGLASS_GAP;
+    const y = -35 + FALL_SPEED*(elapsedSec-spawnSec);
+    if(y > EXIT_Y) continue;
+    const lane = Math.floor(seededValue(seed*2+2, i)*3);
+    visible.push({lane, y, type:"hourglass"});
+    const key="h"+i;
+    if(y>=JUDGE_Y && !processed.has(key)){
+      processed.add(key);
+      if(lane===currentLane) onHit("hourglass");
     }
   }
   return visible;
@@ -257,7 +272,7 @@ let leaderboardUnsub = null;
 
 let local = {
   lane:1, time:10, alive:false, startedAt:0, elapsed:0,
-  schedule:[], processed:null, lastTick:0
+  seed:0, processed:null, lastTick:0
 };
 
 let soloTimer = null;
@@ -355,7 +370,7 @@ function startSolo(){
   resetArena();
   local={
     lane:1,time:10,alive:true,startedAt:performance.now(),elapsed:0,
-    schedule:generateObstacleSchedule(300),processed:new Set(),lastTick:performance.now()
+    seed:Math.floor(Math.random()*1e9),processed:new Set(),lastTick:performance.now()
   };
   renderLane();
   $("stateText").textContent="RUN";
@@ -371,7 +386,7 @@ function startSolo(){
     local.elapsed=(now-local.startedAt)/1000;
     local.time-=dt;
 
-    const visible=stepObstacles(local.schedule, local.elapsed, local.processed, local.lane, (type)=>{
+    const visible=stepObstacles(local.seed, local.elapsed, local.processed, local.lane, (type)=>{
       if(type==="hourglass") local.time+=5;
       else local.time-=3;
     });
@@ -514,10 +529,12 @@ async function hostStartBattle(){
   }
 
   const startedAt=Date.now()+1200;
-  const obstacles=generateObstacleSchedule(300);
+  // roundSeed alone is enough — every client derives the same obstacle
+  // lanes/timings from it via stepObstacles(), computed on demand, so the
+  // round never runs out no matter how long it lasts.
   await update(ref(db,`timeRooms/${room}`),{
     meta:{status:"playing",hostId:playerId,startedAt},
-    game:{status:"playing",startedAt,roundSeed:Math.floor(Math.random()*1e9),obstacles}
+    game:{status:"playing",startedAt,roundSeed:Math.floor(Math.random()*1e9)}
   });
 }
 
@@ -528,7 +545,7 @@ function startBattleClient(data){
   const start=Number(data.game.startedAt);
   local={
     lane:1,time:10,alive:true,startedAt:start,elapsed:0,
-    schedule:data.game.obstacles||[],processed:new Set(),lastTick:Date.now()
+    seed:Number(data.game.roundSeed)||0,processed:new Set(),lastTick:Date.now()
   };
   $("stateText").textContent="RUN";
   $("battleStatus").classList.remove("hidden");
@@ -560,7 +577,7 @@ function battleTick(startedAt){
   local.elapsed=elapsed;
   local.time-=dt;
 
-  const visible=stepObstacles(local.schedule, elapsed, local.processed, local.lane, (type)=>{
+  const visible=stepObstacles(local.seed, elapsed, local.processed, local.lane, (type)=>{
     if(type==="hourglass") local.time+=5;
     else local.time-=3;
     syncMyState();
