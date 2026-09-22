@@ -7,59 +7,108 @@
 <title>Formwheel Time</title>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f7f8fc;color:#17191f}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#17191f}
+body{
+  background:
+    radial-gradient(650px 420px at 8% -6%, rgba(255,201,124,.28), transparent 60%),
+    radial-gradient(700px 460px at 108% 10%, rgba(124,168,255,.28), transparent 60%),
+    radial-gradient(600px 500px at 50% 120%, rgba(180,140,255,.20), transparent 60%),
+    #f7f8fc;
+  background-attachment:fixed;
+  position:relative;
+  overflow-x:hidden;
+}
+body::before{
+  content:"⏳";
+  position:fixed;
+  right:-60px;
+  bottom:-70px;
+  font-size:280px;
+  opacity:.05;
+  transform:rotate(-12deg);
+  pointer-events:none;
+  z-index:0;
+}
 button,input{font:inherit}
-button{cursor:pointer}
-.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);border-bottom:1px solid #e8eaf0}
-.logo{font-weight:900;font-size:21px;letter-spacing:-.5px;color:#111;text-decoration:none}
-.logo span{display:inline-block;transform:rotate(12deg);margin:0 2px}
-.wrap{max-width:900px;margin:0 auto;padding:24px 16px 48px}
-.card{background:#fff;border:1px solid #e6e8ee;border-radius:22px;padding:22px;box-shadow:0 8px 28px rgba(20,30,50,.06);margin-bottom:16px}
+button{cursor:pointer;transition:transform .12s ease, filter .12s ease, box-shadow .12s ease}
+button:active{transform:scale(.96)}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
+  padding:calc(14px + env(safe-area-inset-top,0px)) 18px 14px;
+  background:rgba(255,255,255,.78);backdrop-filter:blur(14px);border-bottom:1px solid #e8eaf0}
+.logo{font-weight:900;font-size:21px;letter-spacing:-.5px;color:#111;text-decoration:none;display:inline-flex;align-items:center}
+.logo span{display:inline-block;transform:rotate(12deg);margin:0 2px;animation:wobble 2.6s ease-in-out infinite}
+@keyframes wobble{0%,100%{transform:rotate(12deg)}50%{transform:rotate(-6deg) scale(1.08)}}
+.top strong{background:linear-gradient(120deg,#ff9d5c,#7c8cff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px calc(48px + env(safe-area-inset-bottom,0px));position:relative;z-index:1}
+.card{background:#fff;border:1px solid #e6e8ee;border-radius:22px;padding:22px;box-shadow:0 8px 28px rgba(20,30,50,.06);margin-bottom:16px;
+  position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,#ff9d5c,#ff6b9d,#7c8cff,#5ee6c0)}
 h1,h2,h3{margin:0 0 12px}
+h1{display:flex;align-items:center;gap:8px}
 .muted{color:#737887}
 .row{display:flex;gap:10px;flex-wrap:wrap}
-button,.btn{border:0;border-radius:13px;padding:11px 16px;background:#17191f;color:#fff;font-weight:800}
-button.secondary,.btn.secondary{background:#eef0f5;color:#20232a}
-button:disabled{opacity:.45;cursor:not-allowed}
+button,.btn{border:0;border-radius:13px;padding:11px 16px;background:#17191f;color:#fff;font-weight:800;
+  box-shadow:0 4px 14px rgba(20,25,40,.18)}
+button:hover{filter:brightness(1.08)}
+button.secondary,.btn.secondary{background:#eef0f5;color:#20232a;box-shadow:none}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none}
 input{width:100%;border:1px solid #dfe2e9;border-radius:13px;padding:12px 13px;outline:none;background:#fff}
 input:focus{border-color:#9aa2b1;box-shadow:0 0 0 3px rgba(100,110,130,.1)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:650px){.grid2{grid-template-columns:1fr}}
 .mode{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
-.mode button{background:#eef0f5;color:#20232a}
-.mode button.active{background:#17191f;color:#fff}
+.mode button{background:#eef0f5;color:#20232a;box-shadow:none}
+.mode button.active{background:#17191f;color:#fff;box-shadow:0 4px 14px rgba(20,25,40,.18)}
 .hidden{display:none!important}
 .status{padding:10px 12px;border-radius:12px;background:#f1f3f7;color:#555d6d;font-size:14px;margin-top:12px}
 .lobbyPlayers{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
-.playerBox{border:1px solid #e3e6ed;border-radius:15px;padding:13px;background:#fafbfc}
+.playerBox{border:1px solid #e3e6ed;border-radius:15px;padding:13px;background:#fafbfc;transition:transform .15s ease}
+.playerBox:hover{transform:translateY(-2px)}
 .playerBox .name{font-weight:800}
 .playerBox .state{font-size:13px;color:#747b89;margin-top:5px}
 .gameTop{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
-.stat{background:#f4f5f8;border-radius:15px;padding:13px;text-align:center}
-.stat b{display:block;font-size:23px;margin-top:3px}
-.arena{position:relative;height:520px;border:1px solid #dfe2e8;border-radius:22px;background:#fff;overflow:hidden;display:grid;grid-template-columns:repeat(3,1fr)}
-.lane{position:relative;border-right:1px dashed #e0e2e8}
+.stat{background:#f4f5f8;border-radius:15px;padding:13px;text-align:center;transition:background .2s ease}
+.stat b{display:block;font-size:23px;margin-top:3px;font-variant-numeric:tabular-nums}
+.stat.danger{background:#fdecec}
+.stat.danger b{color:#e0473e;animation:pulse 0.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.arena{position:relative;height:520px;border:1px solid #dfe2e8;border-radius:22px;overflow:hidden;
+  display:grid;grid-template-columns:repeat(3,1fr);
+  background:linear-gradient(180deg,#ffffff 0%,#f8f9fd 70%,#f1f2f8 100%)}
+.lane{position:relative;border-right:1px dashed #e0e2e8;transition:background .15s ease}
 .lane:last-child{border-right:0}
-.playerDot{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:44px;height:44px;border-radius:14px;background:#17191f;color:#fff;display:grid;place-items:center;font-weight:900;z-index:5}
-.obstacle{position:absolute;left:50%;transform:translateX(-50%);font-size:30px;z-index:4;user-select:none}
+.lane.active{background:rgba(23,25,31,.035)}
+.judgeLine{position:absolute;left:0;right:0;top:470px;height:0;border-top:2px dashed #ffb37a;z-index:3;opacity:.75}
+.judgeLine::after{content:"⚡ 판정선";position:absolute;right:8px;top:-19px;font-size:11px;color:#c07a3a;font-weight:800}
+.playerDot{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:44px;height:44px;border-radius:14px;
+  background:linear-gradient(145deg,#2b2f3a,#0f1115);color:#fff;display:grid;place-items:center;font-weight:900;z-index:5;
+  box-shadow:0 6px 16px rgba(15,17,21,.35);transition:left .12s ease}
+.obstacle{position:absolute;left:50%;transform:translateX(-50%);font-size:30px;z-index:4;user-select:none;
+  animation:spin 1.1s ease-in-out infinite alternate;filter:drop-shadow(0 4px 6px rgba(0,0,0,.18))}
+.obstacle.good{filter:drop-shadow(0 0 8px rgba(255,196,80,.75))}
+.obstacle.bad{filter:drop-shadow(0 0 8px rgba(255,90,90,.55))}
+@keyframes spin{0%{transform:translateX(-50%) rotate(-8deg)}100%{transform:translateX(-50%) rotate(8deg)}}
 .controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
 .controlBtn{height:64px;font-size:25px}
 .battlePlayers{margin-top:14px;display:grid;gap:8px}
 .battleRow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:11px 13px;border:1px solid #e4e6ec;border-radius:14px}
 .progress{width:150px;height:9px;background:#e8eaf0;border-radius:99px;overflow:hidden}
-.progress i{display:block;height:100%;background:#17191f;width:50%}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,#ff9d5c,#7c8cff);width:50%;transition:width .1s linear}
 table{width:100%;border-collapse:collapse}
 th,td{text-align:left;padding:11px 8px;border-bottom:1px solid #eceef2}
 th{font-size:13px;color:#777e8d}
 .rank{font-weight:900;width:50px}
 .small{font-size:13px}
 .notice{background:#fff8df;border:1px solid #f2df9a;color:#6d5b18;padding:12px;border-radius:14px;font-size:13px}
+.confetti{position:fixed;top:-40px;font-size:22px;z-index:50;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg);opacity:.15}}
 </style>
 </head>
 <body>
 <header class="top">
   <a class="logo" href="https://semicolonxss.github.io/Formwheel/">Form<span>◉</span>Wheel</a>
-  <strong>Time</strong>
+  <strong>⏱️ Time</strong>
 </header>
 
 <main class="wrap">
@@ -67,12 +116,12 @@ th{font-size:13px;color:#777e8d}
     <h1>⏱️ Formwheel Time</h1>
     <p class="muted">시간을 관리하며 장애물을 피하고, 모래시계를 먹어 기록을 늘려보세요.</p>
     <div class="mode">
-      <button id="soloMode" class="active">Solo</button>
-      <button id="battleMode">Battle</button>
+      <button id="soloMode" class="active">🏃 Solo</button>
+      <button id="battleMode">⚔️ Battle</button>
     </div>
 
     <div id="soloSetup">
-      <button id="soloStart">Solo 시작</button>
+      <button id="soloStart">▶️ Solo 시작</button>
     </div>
 
     <div id="battleSetup" class="hidden">
@@ -87,17 +136,17 @@ th{font-size:13px;color:#777e8d}
         </div>
       </div>
       <div class="row" style="margin-top:12px">
-        <button id="createRoom">방 만들기</button>
-        <button id="joinRoom" class="secondary">방 참가</button>
-        <button id="leaveRoom" class="secondary hidden">방 나가기</button>
+        <button id="createRoom">🆕 방 만들기</button>
+        <button id="joinRoom" class="secondary">🚪 방 참가</button>
+        <button id="leaveRoom" class="secondary hidden">나가기</button>
       </div>
       <div id="connectionStatus" class="status">Firebase 연결 중...</div>
       <div id="lobby" class="hidden">
-        <h3 style="margin-top:18px">대기실</h3>
+        <h3 style="margin-top:18px">👥 대기실</h3>
         <div>방 코드: <b id="roomCodeDisplay">-</b></div>
         <div id="players" class="lobbyPlayers"></div>
         <div id="hostControls" class="row hidden">
-          <button id="startBattle">배틀 시작</button>
+          <button id="startBattle">🚀 배틀 시작</button>
         </div>
         <div class="notice">배틀은 Firebase Realtime Database로 방, 플레이어, 이동, 시간, 장애물 상태를 실시간 동기화합니다.</div>
       </div>
@@ -106,12 +155,13 @@ th{font-size:13px;color:#777e8d}
 
   <section id="gameCard" class="card hidden">
     <div class="gameTop">
-      <div class="stat">남은 시간<b id="timeText">10.0</b></div>
+      <div class="stat" id="timeStat">남은 시간<b id="timeText">10.0</b></div>
       <div class="stat">내 위치<b id="laneText">2</b></div>
       <div class="stat">상태<b id="stateText">RUN</b></div>
     </div>
     <div id="arena" class="arena">
-      <div class="lane"></div><div class="lane"></div><div class="lane"></div>
+      <div class="lane" data-lane="0"></div><div class="lane" data-lane="1"></div><div class="lane" data-lane="2"></div>
+      <div class="judgeLine"></div>
       <div id="myDot" class="playerDot">YOU</div>
     </div>
     <div class="controls">
@@ -155,23 +205,60 @@ const escapeHtml = s => String(s ?? "").replace(/[&<>"']/g, c => ({
   "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
 }[c]));
 
+// ---- obstacle physics constants (shared by solo & battle) ----
+const FALL_SPEED = 150;      // px / second
+const SPAWN_GAP = 0.95;      // seconds between spawns
+const JUDGE_Y = 470;         // collision line (px from top of arena)
+const EXIT_Y = 560;          // obstacle removed from view past this point
+
+function generateObstacleSchedule(count){
+  const arr=[];
+  for(let i=0;i<count;i++){
+    arr.push({
+      t:Math.round((1.0+i*SPAWN_GAP)*1000),
+      lane:Math.floor(Math.random()*3),
+      type:Math.random()<.28?"hourglass":"obstacle"
+    });
+  }
+  return arr;
+}
+
+// Computes which obstacles are currently visible given elapsed seconds,
+// and fires onHit(type) once per obstacle the moment it crosses the judge line
+// in the player's current lane. Using elapsed-time math (rather than a single
+// mutable "current obstacle") means several obstacles can be mid-fall at once
+// without one spawn silently overwriting/erasing the previous one.
+function stepObstacles(schedule, elapsedSec, processed, currentLane, onHit){
+  const visible = [];
+  for(let i=0;i<schedule.length;i++){
+    const o = schedule[i];
+    const spawnSec = o.t/1000;
+    if(elapsedSec < spawnSec) continue;
+    const y = -35 + FALL_SPEED*(elapsedSec-spawnSec);
+    if(y > EXIT_Y) continue;
+    visible.push({lane:o.lane, y, type:o.type});
+    if(y>=JUDGE_Y && !processed.has(i)){
+      processed.add(i);
+      if(o.lane===currentLane) onHit(o.type);
+    }
+  }
+  return visible;
+}
+
 let mode = "solo";
 let room = "";
 let playerId = "";
 let isHost = false;
 let roomUnsub = null;
-let playerUnsub = null;
 let gameUnsub = null;
 let leaderboardUnsub = null;
 
 let local = {
   lane:1, time:10, alive:false, startedAt:0, elapsed:0,
-  obstacle: null, lastTick:0, finished:false
+  schedule:[], processed:null, lastTick:0
 };
 
 let soloTimer = null;
-let soloObstacleTimer = null;
-let soloObstacle = null;
 
 function randomCode(){
   return String(Math.floor(100000 + Math.random()*900000));
@@ -204,7 +291,7 @@ window.addEventListener("keydown", e=>{
   if(e.key==="ArrowRight"){e.preventDefault();move(1)}
 });
 
-$("connectionStatus").textContent = "Firebase 연결됨";
+$("connectionStatus").textContent = "Firebase 연결됨 ✅";
 
 function showGame(){
   $("gameCard").classList.remove("hidden");
@@ -216,58 +303,73 @@ function showHome(){
 function renderLane(){
   $("laneText").textContent = String(local.lane+1);
   $("myDot").style.left = ((local.lane+0.5)*100/3)+"%";
+  document.querySelectorAll(".lane").forEach(l=>{
+    l.classList.toggle("active", Number(l.dataset.lane)===local.lane);
+  });
 }
 
 function resetArena(){
   document.querySelectorAll(".obstacle").forEach(x=>x.remove());
 }
-function renderObstacle(obs){
+function renderObstacles(list){
   resetArena();
-  if(!obs) return;
-  const el=document.createElement("div");
-  el.className="obstacle";
-  el.textContent=obs.type==="hourglass" ? "⏳" : "💥";
-  el.style.left=((obs.lane+0.5)*100/3)+"%";
-  el.style.top=obs.y+"px";
-  $("arena").appendChild(el);
+  const arena=$("arena");
+  for(const obs of list){
+    const el=document.createElement("div");
+    el.className="obstacle "+(obs.type==="hourglass"?"good":"bad");
+    el.textContent=obs.type==="hourglass" ? "⏳" : "💥";
+    el.style.left=((obs.lane+0.5)*100/3)+"%";
+    el.style.top=obs.y+"px";
+    arena.appendChild(el);
+  }
+}
+function updateTimeStat(){
+  $("timeText").textContent=Math.max(0,local.time).toFixed(1);
+  $("timeStat").classList.toggle("danger", local.time<=3 && local.alive);
+}
+
+function spawnConfetti(){
+  const emojis=["🎉","✨","⏳","🎊","⭐"];
+  for(let i=0;i<22;i++){
+    const el=document.createElement("div");
+    el.className="confetti";
+    el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    el.style.left=Math.random()*100+"vw";
+    el.style.animationDuration=(1.4+Math.random()*1.2)+"s";
+    el.style.fontSize=(16+Math.random()*14)+"px";
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),2800);
+  }
 }
 
 function startSolo(){
   mode="solo";
   showGame();
   resetArena();
-  local={lane:1,time:10,alive:true,startedAt:performance.now(),elapsed:0,obstacle:null,lastTick:performance.now(),finished:false};
+  local={
+    lane:1,time:10,alive:true,startedAt:performance.now(),elapsed:0,
+    schedule:generateObstacleSchedule(300),processed:new Set(),lastTick:performance.now()
+  };
   renderLane();
   $("stateText").textContent="RUN";
+  $("battleStatus").classList.add("hidden");
+  updateTimeStat();
   clearInterval(soloTimer);
-  clearInterval(soloObstacleTimer);
-
-  soloObstacleTimer=setInterval(()=>{
-    if(!local.alive)return;
-    const type=Math.random()<.28 ? "hourglass":"obstacle";
-    soloObstacle={id:Date.now(),lane:Math.floor(Math.random()*3),y:-35,type};
-  },950);
 
   soloTimer=setInterval(()=>{
     if(!local.alive)return;
     const now=performance.now();
     const dt=(now-local.lastTick)/1000;
     local.lastTick=now;
-    local.time-=dt;
     local.elapsed=(now-local.startedAt)/1000;
+    local.time-=dt;
 
-    if(soloObstacle){
-      soloObstacle.y += 7.5;
-      if(soloObstacle.y>470){
-        if(soloObstacle.lane===local.lane){
-          if(soloObstacle.type==="hourglass") local.time+=5;
-          else local.time-=3;
-        }
-        soloObstacle=null;
-      }
-    }
-    renderObstacle(soloObstacle);
-    $("timeText").textContent=Math.max(0,local.time).toFixed(1);
+    const visible=stepObstacles(local.schedule, local.elapsed, local.processed, local.lane, (type)=>{
+      if(type==="hourglass") local.time+=5;
+      else local.time-=3;
+    });
+    renderObstacles(visible);
+    updateTimeStat();
     if(local.time<=0){
       finishSolo();
     }
@@ -276,10 +378,11 @@ function startSolo(){
 function finishSolo(){
   if(!local.alive)return;
   local.alive=false;
-  clearInterval(soloTimer); clearInterval(soloObstacleTimer);
+  clearInterval(soloTimer);
   $("stateText").textContent="FINISH";
   $("battleStatus").classList.remove("hidden");
-  $("battleStatus").textContent="기록: "+local.elapsed.toFixed(2)+"초";
+  $("battleStatus").textContent="🏁 기록: "+local.elapsed.toFixed(2)+"초";
+  spawnConfetti();
   saveLeaderboard(local.elapsed);
 }
 function move(dir){
@@ -318,8 +421,9 @@ function watchLeaderboard(){
     const vals=Object.values(snap.val()||{}).filter(Boolean)
       .sort((a,b)=>Number(b.seconds)-Number(a.seconds)).slice(0,20);
     if(!vals.length){$("leaderboard").innerHTML='<p class="muted">아직 기록이 없습니다.</p>';return}
+    const medal=i=>i===0?"🥇":i===1?"🥈":i===2?"🥉":"";
     $("leaderboard").innerHTML=`<table><thead><tr><th>순위</th><th>닉네임</th><th>기록</th></tr></thead><tbody>`+
-      vals.map((v,i)=>`<tr><td class="rank">${i+1}</td><td>${escapeHtml(v.name)}</td><td>${Number(v.seconds).toFixed(2)}초</td></tr>`).join("")+
+      vals.map((v,i)=>`<tr><td class="rank">${medal(i)||(i+1)}</td><td>${escapeHtml(v.name)}</td><td>${Number(v.seconds).toFixed(2)}초</td></tr>`).join("")+
       `</tbody></table>`;
   });
 }
@@ -402,22 +506,11 @@ async function hostStartBattle(){
   }
 
   const startedAt=Date.now()+1200;
-  const obstacles=generateObstacleSchedule(60);
+  const obstacles=generateObstacleSchedule(300);
   await update(ref(db,`timeRooms/${room}`),{
     meta:{status:"playing",hostId:playerId,startedAt},
     game:{status:"playing",startedAt,roundSeed:Math.floor(Math.random()*1e9),obstacles}
   });
-}
-function generateObstacleSchedule(count){
-  const arr=[];
-  for(let i=0;i<count;i++){
-    arr.push({
-      t:Math.round((1.0+i*0.95)*1000),
-      lane:Math.floor(Math.random()*3),
-      type:Math.random()<.28?"hourglass":"obstacle"
-    });
-  }
-  return arr;
 }
 
 function startBattleClient(data){
@@ -425,11 +518,15 @@ function startBattleClient(data){
   showGame();
   resetArena();
   const start=Number(data.game.startedAt);
-  local={lane:1,time:10,alive:true,startedAt:start,elapsed:0,obstacle:null,lastTick:performance.now(),finished:false};
+  local={
+    lane:1,time:10,alive:true,startedAt:start,elapsed:0,
+    schedule:data.game.obstacles||[],processed:new Set(),lastTick:Date.now()
+  };
   $("stateText").textContent="RUN";
   $("battleStatus").classList.remove("hidden");
-  $("battleStatus").textContent="Firebase 실시간 배틀 진행 중";
+  $("battleStatus").textContent="🔥 Firebase 실시간 배틀 진행 중";
   renderLane();
+  updateTimeStat();
 
   if(gameUnsub)gameUnsub();
   gameUnsub=onValue(ref(db,`timeRooms/${room}`),snap=>{
@@ -439,8 +536,8 @@ function startBattleClient(data){
     if(r.meta?.status==="finished") renderBattleFinished(r);
   });
 
-  clearInterval(soloTimer);clearInterval(soloObstacleTimer);
-  soloTimer=setInterval(()=>battleTick(data.game.startedAt),50);
+  clearInterval(soloTimer);
+  soloTimer=setInterval(()=>battleTick(start),50);
 }
 function battleTick(startedAt){
   if(!local.alive)return;
@@ -449,28 +546,19 @@ function battleTick(startedAt){
     $("timeText").textContent="10.0";
     return;
   }
+  const dt=(now-local.lastTick)/1000;
+  local.lastTick=now;
   const elapsed=(now-Number(startedAt))/1000;
   local.elapsed=elapsed;
-  const scheduleCache = window.currentBattleSchedule || null;
-  // The room listener below supplies the current schedule.
-  const obs = scheduleCache?.find(o=>Math.abs(o.t/1000-elapsed)<0.05);
-  if(obs && (!local.obstacle || local.obstacle.t!==obs.t)){
-    local.obstacle={...obs,y:-35,t:obs.t};
-  }
-  if(local.obstacle){
-    local.obstacle.y += 7.5;
-    if(local.obstacle.y>470){
-      if(local.obstacle.lane===local.lane){
-        if(local.obstacle.type==="hourglass")local.time+=5;
-        else local.time-=3;
-      }
-      local.obstacle=null;
-      syncMyState();
-    }
-  }
-  local.time-=0.05;
-  $("timeText").textContent=Math.max(0,local.time).toFixed(1);
-  renderObstacle(local.obstacle);
+  local.time-=dt;
+
+  const visible=stepObstacles(local.schedule, elapsed, local.processed, local.lane, (type)=>{
+    if(type==="hourglass") local.time+=5;
+    else local.time-=3;
+    syncMyState();
+  });
+  renderObstacles(visible);
+  updateTimeStat();
   if(local.time<=0){
     finishBattlePlayer();
   }
@@ -518,8 +606,9 @@ function renderBattleFinished(data){
   const winner=data.meta?.winnerName||"없음";
   $("stateText").textContent="END";
   $("battleStatus").classList.remove("hidden");
-  $("battleStatus").textContent=`배틀 종료 · 결과: ${escapeHtml(winner)}`;
+  $("battleStatus").textContent=`🏁 배틀 종료 · 결과: ${escapeHtml(winner)}`;
   clearInterval(soloTimer);
+  spawnConfetti();
 }
 async function leaveRoom(doConfirm=true){
   if(doConfirm && room && playerId){
@@ -537,13 +626,6 @@ async function leaveRoom(doConfirm=true){
   $("players").innerHTML="";
   showHome();
 }
-
-// Keep the room's obstacle schedule available to every client.
-onValue(ref(db), snap=>{
-  const root=snap.val();
-  const r=root?.timeRooms?.[room];
-  if(r?.game?.obstacles) window.currentBattleSchedule=r.game.obstacles;
-});
 </script>
 </body>
 </html>
