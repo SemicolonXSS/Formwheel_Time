@@ -4,266 +4,546 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f7f8fc">
-<title>FormWheel Time</title>
+<title>Formwheel Time</title>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f7f8fc;color:#172033}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f7f8fc;color:#17191f}
 button,input{font:inherit}
 button{cursor:pointer}
-.top{position:sticky;top:0;z-index:10;padding:14px 18px;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);border-bottom:1px solid #e8ebf2}
-.nav{max-width:980px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:14px}
-.logo{font-size:22px;font-weight:900;text-decoration:none;color:#172033}
-.logo span{color:#5965f2}
-.wrap{width:min(980px,94vw);margin:28px auto 50px}
-.hero{text-align:center;margin-bottom:22px}
-.hero h1{font-size:42px;margin:0 0 8px;letter-spacing:-1.5px}
-.hero p{margin:0;color:#6b7280}
-.panel{background:#fff;border:1px solid #e7eaf1;border-radius:22px;padding:22px;box-shadow:0 8px 28px rgba(20,30,60,.06)}
-.modes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
-.mode{padding:18px;border:2px solid #e7eaf1;background:#fff;border-radius:18px;text-align:left}
-.mode.active{border-color:#5965f2;background:#f3f4ff}
-.mode b{font-size:20px}
-.mode small{display:block;color:#737b8c;margin-top:5px}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-input{width:100%;padding:13px 14px;border:1px solid #dfe3eb;border-radius:12px;outline:none}
-input:focus{border-color:#5965f2}
-.primary,.secondary{border:0;border-radius:12px;padding:13px 18px;font-weight:800}
-.primary{background:#5965f2;color:white}
-.secondary{background:#eef0f5;color:#263043}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);border-bottom:1px solid #e8eaf0}
+.logo{font-weight:900;font-size:21px;letter-spacing:-.5px;color:#111;text-decoration:none}
+.logo span{display:inline-block;transform:rotate(12deg);margin:0 2px}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 48px}
+.card{background:#fff;border:1px solid #e6e8ee;border-radius:22px;padding:22px;box-shadow:0 8px 28px rgba(20,30,50,.06);margin-bottom:16px}
+h1,h2,h3{margin:0 0 12px}
+.muted{color:#737887}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+button,.btn{border:0;border-radius:13px;padding:11px 16px;background:#17191f;color:#fff;font-weight:800}
+button.secondary,.btn.secondary{background:#eef0f5;color:#20232a}
+button:disabled{opacity:.45;cursor:not-allowed}
+input{width:100%;border:1px solid #dfe2e9;border-radius:13px;padding:12px 13px;outline:none;background:#fff}
+input:focus{border-color:#9aa2b1;box-shadow:0 0 0 3px rgba(100,110,130,.1)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:650px){.grid2{grid-template-columns:1fr}}
+.mode{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.mode button{background:#eef0f5;color:#20232a}
+.mode button.active{background:#17191f;color:#fff}
 .hidden{display:none!important}
-.gameHead{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:14px}
-.timer{font-size:38px;font-weight:900;letter-spacing:-1px}
-.timer.low{color:#e5484d}
-.stats{display:flex;gap:8px;flex-wrap:wrap}
-.badge{padding:7px 10px;background:#f0f2f7;border-radius:999px;font-size:13px;color:#5d6678}
-.track{position:relative;width:min(430px,100%);height:620px;margin:0 auto;background:#101827;border-radius:24px;overflow:hidden;border:5px solid #263247;box-shadow:inset 0 0 0 2px #47536a}
-.lanes{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr)}
-.lane{border-right:2px dashed rgba(255,255,255,.13)}
-.lane:last-child{border:0}
-.player{position:absolute;bottom:42px;width:26%;left:37%;height:56px;display:flex;align-items:center;justify-content:center;font-size:32px;transition:left .12s ease;z-index:4}
-.obj{position:absolute;width:26%;height:54px;display:flex;align-items:center;justify-content:center;font-size:31px;z-index:3}
-.obstacle{filter:drop-shadow(0 5px 8px rgba(0,0,0,.3))}
-.hourglass{filter:drop-shadow(0 5px 8px rgba(0,0,0,.3))}
-.flash{animation:flash .22s ease}
-@keyframes flash{50%{filter:brightness(1.8)}}
-.controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px auto 0;width:min(430px,100%)}
-.control{height:58px;border:0;border-radius:16px;background:#fff;border:1px solid #dfe3eb;font-size:27px;font-weight:900}
-.control:active{transform:scale(.97)}
-.center{text-align:center}
-.result h2{margin:0 0 8px;font-size:30px}
-.big{font-size:52px;font-weight:950;margin:8px 0}
-.note{color:#697386;font-size:14px;line-height:1.5}
-.room{font-size:28px;font-weight:900;letter-spacing:5px}
-.players{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:14px 0}
-.pbox{padding:13px;border-radius:14px;background:#f4f5f8;text-align:center}
-.pbox.alive{background:#eef0ff}
-@media(max-width:600px){
- .hero h1{font-size:34px}.panel{padding:16px}.modes{grid-template-columns:1fr}
- .track{height:540px}.players{grid-template-columns:1fr 1fr}.timer{font-size:31px}
-}
+.status{padding:10px 12px;border-radius:12px;background:#f1f3f7;color:#555d6d;font-size:14px;margin-top:12px}
+.lobbyPlayers{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.playerBox{border:1px solid #e3e6ed;border-radius:15px;padding:13px;background:#fafbfc}
+.playerBox .name{font-weight:800}
+.playerBox .state{font-size:13px;color:#747b89;margin-top:5px}
+.gameTop{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat{background:#f4f5f8;border-radius:15px;padding:13px;text-align:center}
+.stat b{display:block;font-size:23px;margin-top:3px}
+.arena{position:relative;height:520px;border:1px solid #dfe2e8;border-radius:22px;background:#fff;overflow:hidden;display:grid;grid-template-columns:repeat(3,1fr)}
+.lane{position:relative;border-right:1px dashed #e0e2e8}
+.lane:last-child{border-right:0}
+.playerDot{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:44px;height:44px;border-radius:14px;background:#17191f;color:#fff;display:grid;place-items:center;font-weight:900;z-index:5}
+.obstacle{position:absolute;left:50%;transform:translateX(-50%);font-size:30px;z-index:4;user-select:none}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.controlBtn{height:64px;font-size:25px}
+.battlePlayers{margin-top:14px;display:grid;gap:8px}
+.battleRow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:11px 13px;border:1px solid #e4e6ec;border-radius:14px}
+.progress{width:150px;height:9px;background:#e8eaf0;border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:#17191f;width:50%}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:11px 8px;border-bottom:1px solid #eceef2}
+th{font-size:13px;color:#777e8d}
+.rank{font-weight:900;width:50px}
+.small{font-size:13px}
+.notice{background:#fff8df;border:1px solid #f2df9a;color:#6d5b18;padding:12px;border-radius:14px;font-size:13px}
 </style>
 </head>
 <body>
 <header class="top">
-  <nav class="nav">
-    <a class="logo" href="https://semicolonxss.github.io/Formwheel/">Form<span>Wheel</span> Time</a>
-    <button id="homeBtn" class="secondary">메인으로</button>
-  </nav>
+  <a class="logo" href="https://semicolonxss.github.io/Formwheel/">Form<span>◉</span>Wheel</a>
+  <strong>Time</strong>
 </header>
 
 <main class="wrap">
-  <section id="menu" class="panel">
-    <div class="hero">
-      <h1>⏱️ FormWheel Time</h1>
-      <p>3개의 레인을 이동하며 시간을 끝까지 지켜내세요!</p>
-    </div>
-
-    <div class="modes">
-      <button class="mode active" id="soloMode" type="button">
-        <b>🧍 Solo</b><small>혼자 최고 생존 기록에 도전</small>
-      </button>
-      <button class="mode" id="battleMode" type="button">
-        <b>⚔️ Battle</b><small>같은 화면에서 여러 명이 경쟁</small>
-      </button>
+  <section id="home" class="card">
+    <h1>⏱️ Formwheel Time</h1>
+    <p class="muted">시간을 관리하며 장애물을 피하고, 모래시계를 먹어 기록을 늘려보세요.</p>
+    <div class="mode">
+      <button id="soloMode" class="active">Solo</button>
+      <button id="battleMode">Battle</button>
     </div>
 
     <div id="soloSetup">
-      <input id="nickname" maxlength="12" placeholder="닉네임 (최대 12자)">
-      <div class="row" style="margin-top:10px">
-        <button id="soloStart" class="primary" type="button">Solo 시작</button>
-      </div>
+      <button id="soloStart">Solo 시작</button>
     </div>
 
     <div id="battleSetup" class="hidden">
-      <input id="battleNames" maxlength="60" placeholder="닉네임 2~4개 (쉼표로 구분)">
-      <p class="note">예: 민수, 철수, 영희 — 한 기기에서 번갈아 플레이하는 로컬 Battle입니다.</p>
-      <button id="battleStart" class="primary" type="button">Battle 시작</button>
-    </div>
-  </section>
-
-  <section id="game" class="hidden">
-    <div class="gameHead">
-      <div>
-        <div id="modeLabel" class="badge">SOLO</div>
-        <div id="turnLabel" style="font-weight:900;margin-top:5px"></div>
+      <div class="grid2">
+        <div>
+          <label class="small">닉네임</label>
+          <input id="nickname" maxlength="12" placeholder="최대 12자">
+        </div>
+        <div>
+          <label class="small">방 코드</label>
+          <input id="roomCode" maxlength="6" inputmode="numeric" placeholder="6자리 코드">
+        </div>
       </div>
-      <div id="timer" class="timer">10.0</div>
-    </div>
-    <div class="stats">
-      <div class="badge">💥 장애물: -3초</div>
-      <div class="badge">⏳ 모래시계: +5초</div>
-      <div id="scoreBadge" class="badge">생존 0.0초</div>
-    </div>
-
-    <div style="margin-top:14px">
-      <div id="track" class="track">
-        <div class="lanes"><div class="lane"></div><div class="lane"></div><div class="lane"></div></div>
-        <div id="player" class="player">🟦</div>
+      <div class="row" style="margin-top:12px">
+        <button id="createRoom">방 만들기</button>
+        <button id="joinRoom" class="secondary">방 참가</button>
+        <button id="leaveRoom" class="secondary hidden">방 나가기</button>
       </div>
-      <div class="controls">
-        <button id="left" class="control" type="button" aria-label="왼쪽 이동">⬅️</button>
-        <button id="right" class="control" type="button" aria-label="오른쪽 이동">➡️</button>
+      <div id="connectionStatus" class="status">Firebase 연결 중...</div>
+      <div id="lobby" class="hidden">
+        <h3 style="margin-top:18px">대기실</h3>
+        <div>방 코드: <b id="roomCodeDisplay">-</b></div>
+        <div id="players" class="lobbyPlayers"></div>
+        <div id="hostControls" class="row hidden">
+          <button id="startBattle">배틀 시작</button>
+        </div>
+        <div class="notice">배틀은 Firebase Realtime Database로 방, 플레이어, 이동, 시간, 장애물 상태를 실시간 동기화합니다.</div>
       </div>
     </div>
   </section>
 
-  <section id="result" class="panel result hidden" style="margin-top:18px">
-    <div class="center">
-      <h2 id="resultTitle">게임 종료</h2>
-      <div id="resultBig" class="big">0.0초</div>
-      <p id="resultText" class="note"></p>
-      <div class="row" style="justify-content:center;margin-top:15px">
-        <button id="again" class="primary" type="button">다시 하기</button>
-        <button id="menuBtn" class="secondary" type="button">메뉴</button>
-      </div>
+  <section id="gameCard" class="card hidden">
+    <div class="gameTop">
+      <div class="stat">남은 시간<b id="timeText">10.0</b></div>
+      <div class="stat">내 위치<b id="laneText">2</b></div>
+      <div class="stat">상태<b id="stateText">RUN</b></div>
     </div>
+    <div id="arena" class="arena">
+      <div class="lane"></div><div class="lane"></div><div class="lane"></div>
+      <div id="myDot" class="playerDot">YOU</div>
+    </div>
+    <div class="controls">
+      <button class="controlBtn" id="leftBtn">←</button>
+      <button class="controlBtn" id="rightBtn">→</button>
+    </div>
+    <div id="battleStatus" class="status hidden"></div>
+    <div id="battleBoard" class="battlePlayers hidden"></div>
+  </section>
+
+  <section class="card">
+    <h2>🏆 Solo 리더보드</h2>
+    <p class="muted small">생존 시간이 긴 기록이 위로 올라갑니다. 같은 닉네임은 더 좋은 기록만 저장됩니다.</p>
+    <div id="leaderboard">불러오는 중...</div>
   </section>
 </main>
 
-<script>
-(() => {
-  const $ = id => document.getElementById(id);
-  const menu=$("menu"), game=$("game"), result=$("result");
-  const soloMode=$("soloMode"), battleMode=$("battleMode");
-  const soloSetup=$("soloSetup"), battleSetup=$("battleSetup");
-  const player=$("player"), track=$("track"), timerEl=$("timer"), scoreBadge=$("scoreBadge");
-  let mode="solo", names=[], turn=0, lane=1, timeLeft=10, elapsed=0;
-  let running=false, last=0, spawnTimer=0, raf=0, objects=[], hitCooldown=0;
-  let results=[];
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import {
+  getDatabase, ref, set, get, update, onValue, push, remove,
+  onDisconnect, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
 
-  function selectMode(m){
-    mode=m;
-    soloMode.classList.toggle("active",m==="solo");
-    battleMode.classList.toggle("active",m==="battle");
-    soloSetup.classList.toggle("hidden",m!=="solo");
-    battleSetup.classList.toggle("hidden",m!=="battle");
-  }
-  soloMode.onclick=()=>selectMode("solo");
-  battleMode.onclick=()=>selectMode("battle");
-  $("homeBtn").onclick=()=>location.href="https://semicolonxss.github.io/Formwheel/";
-  $("menuBtn").onclick=()=>showMenu();
-  $("again").onclick=()=> mode==="solo" ? startSolo() : startBattle();
+const firebaseConfig = {
+  apiKey: "AIzaSyBreTSe1m0-xlbF4aupnU5isRZCihR25IE",
+  authDomain: "formwheel.firebaseapp.com",
+  databaseURL: "https://formwheel-default-rtdb.firebaseio.com",
+  projectId: "formwheel",
+  storageBucket: "formwheel.firebasestorage.app",
+  messagingSenderId: "431583088241",
+  appId: "1:431583088241:web:74e0e34ea1e3e1170c55d0",
+  measurementId: "G-T372YXDF8D"
+};
 
-  function showMenu(){
-    stop();
-    menu.classList.remove("hidden"); game.classList.add("hidden"); result.classList.add("hidden");
-  }
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-  function startSolo(){
-    mode="solo"; names=[$("nickname").value.trim()||"Player"]; turn=0; results=[]; beginRound();
-  }
-  function startBattle(){
-    const list=$("battleNames").value.split(",").map(x=>x.trim()).filter(Boolean).slice(0,4);
-    names=list.length>=2?list:["Player 1","Player 2"];
-    mode="battle"; turn=0; results=[]; beginRound();
-  }
+const $ = id => document.getElementById(id);
+const escapeHtml = s => String(s ?? "").replace(/[&<>"']/g, c => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
 
-  $("soloStart").onclick=startSolo;
-  $("battleStart").onclick=startBattle;
+let mode = "solo";
+let room = "";
+let playerId = "";
+let isHost = false;
+let roomUnsub = null;
+let playerUnsub = null;
+let gameUnsub = null;
+let leaderboardUnsub = null;
 
-  function beginRound(){
-    menu.classList.add("hidden"); result.classList.add("hidden"); game.classList.remove("hidden");
-    lane=1; timeLeft=10; elapsed=0; spawnTimer=0; hitCooldown=0; objects.forEach(o=>o.el.remove()); objects=[];
-    player.textContent="🟦"; updatePlayer();
-    $("modeLabel").textContent=mode==="solo"?"SOLO":"BATTLE";
-    $("turnLabel").textContent=mode==="solo"?names[0]:`${names[turn]} 차례`;
-    running=true; last=performance.now(); cancelAnimationFrame(raf); raf=requestAnimationFrame(loop);
-  }
+let local = {
+  lane:1, time:10, alive:false, startedAt:0, elapsed:0,
+  obstacle: null, lastTick:0, finished:false
+};
 
-  function stop(){running=false;cancelAnimationFrame(raf);objects.forEach(o=>o.el.remove());objects=[];}
+let soloTimer = null;
+let soloObstacleTimer = null;
+let soloObstacle = null;
 
-  function updatePlayer(){ player.style.left=(lane*33.333+3.667)+"%"; }
+function randomCode(){
+  return String(Math.floor(100000 + Math.random()*900000));
+}
+function randomId(){
+  return "p_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8);
+}
 
-  function move(dir){
-    if(!running)return;
-    lane=Math.max(0,Math.min(2,lane+dir)); updatePlayer();
-  }
-  $("left").onclick=()=>move(-1); $("right").onclick=()=>move(1);
-  document.addEventListener("keydown",e=>{
-    if(!running)return;
-    if(e.key==="ArrowLeft"){e.preventDefault();move(-1)}
-    if(e.key==="ArrowRight"){e.preventDefault();move(1)}
-  });
+$("soloMode").onclick = () => setMode("solo");
+$("battleMode").onclick = () => setMode("battle");
 
-  function spawn(){
-    const el=document.createElement("div");
-    const good=Math.random()<0.18;
-    el.className="obj "+(good?"hourglass":"obstacle");
-    el.textContent=good?"⏳":"💥";
-    const l=Math.floor(Math.random()*3);
-    el.style.left=(l*33.333+3.667)+"%";
-    el.style.top="-62px";
-    track.appendChild(el);
-    objects.push({el,lane:l,y:-62,good,speed:180+Math.min(elapsed*7,220)});
-  }
+function setMode(m){
+  mode=m;
+  $("soloMode").classList.toggle("active",m==="solo");
+  $("battleMode").classList.toggle("active",m==="battle");
+  $("soloSetup").classList.toggle("hidden",m!=="solo");
+  $("battleSetup").classList.toggle("hidden",m!=="battle");
+}
 
-  function loop(now){
-    if(!running)return;
-    const dt=Math.min((now-last)/1000,.05); last=now;
-    elapsed+=dt; timeLeft-=dt; spawnTimer-=dt; hitCooldown=Math.max(0,hitCooldown-dt);
-    const difficulty=1+Math.min(elapsed/25,1.8);
-    if(spawnTimer<=0){spawn();spawnTimer=Math.max(.26,.65-elapsed*.012)/difficulty}
-    for(let i=objects.length-1;i>=0;i--){
-      const o=objects[i]; o.y+=o.speed*dt*difficulty; o.el.style.top=o.y+"px";
-      if(o.y>track.clientHeight+70){o.el.remove();objects.splice(i,1);continue}
-      if(o.lane===lane && o.y>track.clientHeight-145 && o.y<track.clientHeight-55 && hitCooldown<=0){
-        hitCooldown=.35; o.el.classList.add("flash");
-        if(o.good) timeLeft+=5;
-        else timeLeft-=3;
-        o.el.remove();objects.splice(i,1);
+$("soloStart").onclick = startSolo;
+$("createRoom").onclick = createRoom;
+$("joinRoom").onclick = joinRoom;
+$("leaveRoom").onclick = leaveRoom;
+$("startBattle").onclick = hostStartBattle;
+$("leftBtn").onclick = () => move(-1);
+$("rightBtn").onclick = () => move(1);
+
+window.addEventListener("keydown", e=>{
+  if(e.key==="ArrowLeft"){e.preventDefault();move(-1)}
+  if(e.key==="ArrowRight"){e.preventDefault();move(1)}
+});
+
+$("connectionStatus").textContent = "Firebase 연결됨";
+
+function showGame(){
+  $("gameCard").classList.remove("hidden");
+  window.scrollTo({top:$("gameCard").offsetTop-10,behavior:"smooth"});
+}
+function showHome(){
+  $("gameCard").classList.add("hidden");
+}
+function renderLane(){
+  $("laneText").textContent = String(local.lane+1);
+  $("myDot").style.left = ((local.lane+0.5)*100/3)+"%";
+}
+
+function resetArena(){
+  document.querySelectorAll(".obstacle").forEach(x=>x.remove());
+}
+function renderObstacle(obs){
+  resetArena();
+  if(!obs) return;
+  const el=document.createElement("div");
+  el.className="obstacle";
+  el.textContent=obs.type==="hourglass" ? "⏳" : "💥";
+  el.style.left=((obs.lane+0.5)*100/3)+"%";
+  el.style.top=obs.y+"px";
+  $("arena").appendChild(el);
+}
+
+function startSolo(){
+  mode="solo";
+  showGame();
+  resetArena();
+  local={lane:1,time:10,alive:true,startedAt:performance.now(),elapsed:0,obstacle:null,lastTick:performance.now(),finished:false};
+  renderLane();
+  $("stateText").textContent="RUN";
+  clearInterval(soloTimer);
+  clearInterval(soloObstacleTimer);
+
+  soloObstacleTimer=setInterval(()=>{
+    if(!local.alive)return;
+    const type=Math.random()<.28 ? "hourglass":"obstacle";
+    soloObstacle={id:Date.now(),lane:Math.floor(Math.random()*3),y:-35,type};
+  },950);
+
+  soloTimer=setInterval(()=>{
+    if(!local.alive)return;
+    const now=performance.now();
+    const dt=(now-local.lastTick)/1000;
+    local.lastTick=now;
+    local.time-=dt;
+    local.elapsed=(now-local.startedAt)/1000;
+
+    if(soloObstacle){
+      soloObstacle.y += 7.5;
+      if(soloObstacle.y>470){
+        if(soloObstacle.lane===local.lane){
+          if(soloObstacle.type==="hourglass") local.time+=5;
+          else local.time-=3;
+        }
+        soloObstacle=null;
       }
     }
-    timerEl.textContent=Math.max(0,timeLeft).toFixed(1);
-    timerEl.classList.toggle("low",timeLeft<=3);
-    scoreBadge.textContent=`생존 ${elapsed.toFixed(1)}초`;
-    if(timeLeft<=0){finishRound();return}
-    raf=requestAnimationFrame(loop);
+    renderObstacle(soloObstacle);
+    $("timeText").textContent=Math.max(0,local.time).toFixed(1);
+    if(local.time<=0){
+      finishSolo();
+    }
+  },50);
+}
+function finishSolo(){
+  if(!local.alive)return;
+  local.alive=false;
+  clearInterval(soloTimer); clearInterval(soloObstacleTimer);
+  $("stateText").textContent="FINISH";
+  $("battleStatus").classList.remove("hidden");
+  $("battleStatus").textContent="기록: "+local.elapsed.toFixed(2)+"초";
+  saveLeaderboard(local.elapsed);
+}
+function move(dir){
+  if(!local.alive)return;
+  local.lane=Math.max(0,Math.min(2,local.lane+dir));
+  renderLane();
+  if(mode==="battle" && room && playerId){
+    update(ref(db,`timeRooms/${room}/players/${playerId}`),{
+      lane:local.lane,
+      actionAt:serverTimestamp()
+    });
+  }
+}
+
+async function saveLeaderboard(seconds){
+  const name=(localStorage.getItem("formwheel_time_name") || prompt("리더보드에 사용할 닉네임을 입력하세요") || "익명").trim().slice(0,12);
+  if(!name)return;
+  localStorage.setItem("formwheel_time_name",name);
+
+  const root=ref(db,"timeLeaderboard");
+  const snap=await get(root);
+  const data=snap.exists()?snap.val():{};
+  let existingKey=null, existing=null;
+  for(const [k,v] of Object.entries(data)){
+    if(v && v.name===name){existingKey=k;existing=v;break;}
+  }
+  if(existing && Number(existing.seconds)>=seconds)return;
+
+  const payload={name,seconds:Number(seconds.toFixed(2)),updatedAt:serverTimestamp()};
+  if(existingKey) await set(ref(db,`timeLeaderboard/${existingKey}`),payload);
+  else await set(push(root),payload);
+}
+function watchLeaderboard(){
+  if(leaderboardUnsub) leaderboardUnsub();
+  leaderboardUnsub=onValue(ref(db,"timeLeaderboard"),snap=>{
+    const vals=Object.values(snap.val()||{}).filter(Boolean)
+      .sort((a,b)=>Number(b.seconds)-Number(a.seconds)).slice(0,20);
+    if(!vals.length){$("leaderboard").innerHTML='<p class="muted">아직 기록이 없습니다.</p>';return}
+    $("leaderboard").innerHTML=`<table><thead><tr><th>순위</th><th>닉네임</th><th>기록</th></tr></thead><tbody>`+
+      vals.map((v,i)=>`<tr><td class="rank">${i+1}</td><td>${escapeHtml(v.name)}</td><td>${Number(v.seconds).toFixed(2)}초</td></tr>`).join("")+
+      `</tbody></table>`;
+  });
+}
+watchLeaderboard();
+
+async function createRoom(){
+  const name=($("nickname").value||"").trim().slice(0,12);
+  if(!name){alert("닉네임을 입력해주세요.");return}
+  playerId=randomId();
+  room=randomCode();
+  isHost=true;
+  $("roomCode").value=room;
+  $("roomCodeDisplay").textContent=room;
+
+  const roomRef=ref(db,`timeRooms/${room}`);
+  await set(roomRef,{
+    meta:{status:"waiting",hostId:playerId,createdAt:serverTimestamp()},
+    players:{
+      [playerId]:{name,lane:1,time:10,alive:true,ready:true,joinedAt:serverTimestamp()}
+    },
+    game:{status:"waiting"}
+  });
+  await onDisconnect(ref(db,`timeRooms/${room}/players/${playerId}`)).remove();
+
+  enterLobby();
+}
+async function joinRoom(){
+  const name=($("nickname").value||"").trim().slice(0,12);
+  room=($("roomCode").value||"").replace(/\D/g,"").slice(0,6);
+  if(!name){alert("닉네임을 입력해주세요.");return}
+  if(room.length!==6){alert("6자리 방 코드를 입력해주세요.");return}
+
+  const snap=await get(ref(db,`timeRooms/${room}`));
+  if(!snap.exists()){alert("존재하지 않는 방입니다.");return}
+  const data=snap.val();
+  if(data?.meta?.status!=="waiting"){alert("이미 시작된 방입니다.");return}
+
+  playerId=randomId();
+  isHost=false;
+  await set(ref(db,`timeRooms/${room}/players/${playerId}`),{
+    name,lane:1,time:10,alive:true,ready:true,joinedAt:serverTimestamp()
+  });
+  await onDisconnect(ref(db,`timeRooms/${room}/players/${playerId}`)).remove();
+  $("roomCodeDisplay").textContent=room;
+  enterLobby();
+}
+function enterLobby(){
+  $("lobby").classList.remove("hidden");
+  $("leaveRoom").classList.remove("hidden");
+  $("hostControls").classList.toggle("hidden",!isHost);
+  $("createRoom").disabled=true;
+  $("joinRoom").disabled=true;
+  watchRoom();
+}
+function watchRoom(){
+  if(roomUnsub)roomUnsub();
+  roomUnsub=onValue(ref(db,`timeRooms/${room}`),snap=>{
+    if(!snap.exists()){
+      leaveRoom(false);
+      return;
+    }
+    const data=snap.val();
+    renderLobby(data);
+    if(data.meta?.status==="playing") startBattleClient(data);
+    if(data.meta?.status==="finished") renderBattleFinished(data);
+  });
+}
+function renderLobby(data){
+  const players=Object.entries(data.players||{});
+  $("players").innerHTML=players.map(([id,p])=>
+    `<div class="playerBox"><div class="name">${escapeHtml(p.name)} ${id===data.meta?.hostId?"👑":""}</div><div class="state">${p.ready?"준비 완료":"대기 중"}</div></div>`
+  ).join("");
+}
+async function hostStartBattle(){
+  if(!isHost || !room)return;
+  const snap=await get(ref(db,`timeRooms/${room}/players`));
+  const players=snap.val()||{};
+  if(Object.keys(players).length<2){
+    if(!confirm("현재 1명입니다. 혼자 테스트로 시작할까요?"))return;
   }
 
-  function finishRound(){
-    running=false;
-    cancelAnimationFrame(raf);
-    objects.forEach(o=>o.el.remove());objects=[];
-    results.push({name:names[turn],time:Math.max(0,elapsed)});
-    if(mode==="battle" && turn<names.length-1){
-      turn++;
-      $("resultTitle").textContent=`${names[turn-1]} 종료`;
-      $("resultBig").textContent=`${elapsed.toFixed(1)}초`;
-      $("resultText").textContent=`다음은 ${names[turn]} 차례입니다. 준비되면 다시 시작하세요.`;
-      result.classList.remove("hidden");
-      $("again").textContent=`${names[turn]} 시작`;
-    }else{
-      const best=results.reduce((a,b)=>b.time>a.time?b:a,results[0]);
-      $("resultTitle").textContent=mode==="solo"?"⏱️ 기록 달성":"🏆 Battle 종료";
-      $("resultBig").textContent=`${best.time.toFixed(1)}초`;
-      $("resultText").textContent=mode==="solo"
-        ? `${names[0]}의 이번 생존 기록입니다. 장애물은 -3초, 모래시계는 +5초입니다.`
-        : results.map((r,i)=>`${i+1}. ${r.name}: ${r.time.toFixed(1)}초`).join("  ·  ");
-      result.classList.remove("hidden");
-      $("again").textContent="다시 하기";
+  const startedAt=Date.now()+1200;
+  const obstacles=generateObstacleSchedule(60);
+  await update(ref(db,`timeRooms/${room}`),{
+    meta:{status:"playing",hostId:playerId,startedAt},
+    game:{status:"playing",startedAt,roundSeed:Math.floor(Math.random()*1e9),obstacles}
+  });
+}
+function generateObstacleSchedule(count){
+  const arr=[];
+  for(let i=0;i<count;i++){
+    arr.push({
+      t:Math.round((1.0+i*0.95)*1000),
+      lane:Math.floor(Math.random()*3),
+      type:Math.random()<.28?"hourglass":"obstacle"
+    });
+  }
+  return arr;
+}
+
+function startBattleClient(data){
+  if(local.alive && local.startedAt===data.game?.startedAt)return;
+  showGame();
+  resetArena();
+  const start=Number(data.game.startedAt);
+  local={lane:1,time:10,alive:true,startedAt:start,elapsed:0,obstacle:null,lastTick:performance.now(),finished:false};
+  $("stateText").textContent="RUN";
+  $("battleStatus").classList.remove("hidden");
+  $("battleStatus").textContent="Firebase 실시간 배틀 진행 중";
+  renderLane();
+
+  if(gameUnsub)gameUnsub();
+  gameUnsub=onValue(ref(db,`timeRooms/${room}`),snap=>{
+    const r=snap.val();
+    if(!r)return;
+    renderBattlePlayers(r.players||{});
+    if(r.meta?.status==="finished") renderBattleFinished(r);
+  });
+
+  clearInterval(soloTimer);clearInterval(soloObstacleTimer);
+  soloTimer=setInterval(()=>battleTick(data.game.startedAt),50);
+}
+function battleTick(startedAt){
+  if(!local.alive)return;
+  const now=Date.now();
+  if(now<Number(startedAt)){
+    $("timeText").textContent="10.0";
+    return;
+  }
+  const elapsed=(now-Number(startedAt))/1000;
+  local.elapsed=elapsed;
+  const scheduleCache = window.currentBattleSchedule || null;
+  // The room listener below supplies the current schedule.
+  const obs = scheduleCache?.find(o=>Math.abs(o.t/1000-elapsed)<0.05);
+  if(obs && (!local.obstacle || local.obstacle.t!==obs.t)){
+    local.obstacle={...obs,y:-35,t:obs.t};
+  }
+  if(local.obstacle){
+    local.obstacle.y += 7.5;
+    if(local.obstacle.y>470){
+      if(local.obstacle.lane===local.lane){
+        if(local.obstacle.type==="hourglass")local.time+=5;
+        else local.time-=3;
+      }
+      local.obstacle=null;
+      syncMyState();
     }
   }
-})();
+  local.time-=0.05;
+  $("timeText").textContent=Math.max(0,local.time).toFixed(1);
+  renderObstacle(local.obstacle);
+  if(local.time<=0){
+    finishBattlePlayer();
+  }
+}
+function syncMyState(){
+  if(!room||!playerId)return;
+  update(ref(db,`timeRooms/${room}/players/${playerId}`),{
+    lane:local.lane,time:Number(Math.max(0,local.time).toFixed(2)),
+    alive:local.alive,elapsed:Number(local.elapsed.toFixed(2)),
+    updatedAt:serverTimestamp()
+  });
+}
+async function finishBattlePlayer(){
+  if(!local.alive)return;
+  local.alive=false;
+  $("stateText").textContent="OUT";
+  await update(ref(db,`timeRooms/${room}/players/${playerId}`),{
+    lane:local.lane,time:0,alive:false,elapsed:Number(local.elapsed.toFixed(2)),
+    finishedAt:serverTimestamp()
+  });
+  if(isHost) checkBattleEnd();
+}
+function renderBattlePlayers(players){
+  const list=Object.entries(players).sort((a,b)=>Number(b[1].time||0)-Number(a[1].time||0));
+  $("battleBoard").classList.remove("hidden");
+  $("battleBoard").innerHTML=list.map(([id,p])=>{
+    const pct=Math.max(0,Math.min(100,(Number(p.time||0)/10)*100));
+    return `<div class="battleRow"><div><b>${escapeHtml(p.name)}${id===playerId?" (나)":""}</b><div class="small">${p.alive?"생존":"탈락"} · ${Number(p.time||0).toFixed(1)}초</div></div><div class="progress"><i style="width:${pct}%"></i></div></div>`;
+  }).join("");
+}
+async function checkBattleEnd(){
+  const snap=await get(ref(db,`timeRooms/${room}/players`));
+  const players=snap.val()||{};
+  const alive=Object.values(players).filter(p=>p.alive);
+  if(alive.length<=1){
+    const winner=Object.values(players).sort((a,b)=>Number(b.time||0)-Number(a.time||0))[0];
+    await update(ref(db,`timeRooms/${room}/meta`),{
+      status:"finished",
+      winnerName:winner?.name||"-",
+      finishedAt:serverTimestamp()
+    });
+  }
+}
+function renderBattleFinished(data){
+  const winner=data.meta?.winnerName||"없음";
+  $("stateText").textContent="END";
+  $("battleStatus").classList.remove("hidden");
+  $("battleStatus").textContent=`배틀 종료 · 결과: ${escapeHtml(winner)}`;
+  clearInterval(soloTimer);
+}
+async function leaveRoom(doConfirm=true){
+  if(doConfirm && room && playerId){
+    try{await remove(ref(db,`timeRooms/${room}/players/${playerId}`))}catch{}
+  }
+  if(roomUnsub)roomUnsub();
+  if(gameUnsub)gameUnsub();
+  roomUnsub=gameUnsub=null;
+  room="";playerId="";isHost=false;
+  $("lobby").classList.add("hidden");
+  $("leaveRoom").classList.add("hidden");
+  $("hostControls").classList.add("hidden");
+  $("createRoom").disabled=false;
+  $("joinRoom").disabled=false;
+  $("players").innerHTML="";
+  showHome();
+}
+
+// Keep the room's obstacle schedule available to every client.
+onValue(ref(db), snap=>{
+  const root=snap.val();
+  const r=root?.timeRooms?.[room];
+  if(r?.game?.obstacles) window.currentBattleSchedule=r.game.obstacles;
+});
 </script>
 </body>
 </html>
