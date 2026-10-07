@@ -185,7 +185,7 @@ th{font-size:13px;color:#777e8d}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 import {
   getDatabase, ref, set, get, update, onValue, push, remove,
-  onDisconnect, serverTimestamp
+  onDisconnect, serverTimestamp, runTransaction
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -201,6 +201,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+let serverOffset=0;const serverNow=()=>Date.now()+serverOffset;
+onValue(ref(db,".info/serverTimeOffset"),snap=>serverOffset=Number(snap.val())||0);
 
 const $ = id => document.getElementById(id);
 const escapeHtml = s => String(s ?? "").replace(/[&<>"']/g, c => ({
@@ -519,8 +521,8 @@ function watchRoom(){
       return;
     }
     const data=snap.val();
-    renderLobby(data);
-    if(data.meta?.status==="playing") startBattleClient(data);
+    isHost=data.meta?.hostId===playerId;renderLobby(data);
+    if(data.meta?.status==="playing"){startBattleClient(data);checkBattleEnd().catch(console.error);}
     if(data.meta?.status==="finished") renderBattleFinished(data);
   });
 }
@@ -538,7 +540,7 @@ async function hostStartBattle(){
     if(!confirm("현재 1명입니다. 혼자 테스트로 시작할까요?"))return;
   }
 
-  const startedAt=Date.now()+1200;
+  const startedAt=serverNow()+1200;
   // roundSeed alone is enough — every client derives the same obstacle
   // lanes/timings from it via stepObstacles(), computed on demand, so the
   // round never runs out no matter how long it lasts.
@@ -549,13 +551,13 @@ async function hostStartBattle(){
 }
 
 function startBattleClient(data){
-  if(local.alive && local.startedAt===data.game?.startedAt)return;
+  if(local.startedAt===data.game?.startedAt)return;
   showGame();
   resetArena();
   const start=Number(data.game.startedAt);
   local={
     lane:1,time:10,alive:true,startedAt:start,elapsed:0,
-    seed:Number(data.game.roundSeed)||0,processed:new Set(),lastTick:Date.now()
+    seed:Number(data.game.roundSeed)||0,processed:new Set(),lastTick:start
   };
   $("stateText").textContent="RUN";
   $("battleStatus").classList.remove("hidden");
@@ -568,6 +570,7 @@ function startBattleClient(data){
     const r=snap.val();
     if(!r)return;
     renderBattlePlayers(r.players||{});
+    if(r.meta?.status==="playing")checkBattleEnd();
     if(r.meta?.status==="finished") renderBattleFinished(r);
   });
 
@@ -576,7 +579,7 @@ function startBattleClient(data){
 }
 function battleTick(startedAt){
   if(!local.alive)return;
-  const now=Date.now();
+  const now=serverNow();
   if(now<Number(startedAt)){
     $("timeText").textContent="10.0";
     return;
@@ -614,7 +617,7 @@ async function finishBattlePlayer(){
     lane:local.lane,time:0,alive:false,elapsed:Number(local.elapsed.toFixed(2)),
     finishedAt:serverTimestamp()
   });
-  if(isHost) checkBattleEnd();
+  checkBattleEnd();
 }
 function renderBattlePlayers(players){
   const list=Object.entries(players).sort((a,b)=>Number(b[1].time||0)-Number(a[1].time||0));
@@ -625,18 +628,19 @@ function renderBattlePlayers(players){
   }).join("");
 }
 async function checkBattleEnd(){
-  const snap=await get(ref(db,`timeRooms/${room}/players`));
-  const players=snap.val()||{};
-  const alive=Object.values(players).filter(p=>p.alive);
-  if(alive.length<=1){
-    const winner=Object.values(players).sort((a,b)=>Number(b.time||0)-Number(a.time||0))[0];
-    await update(ref(db,`timeRooms/${room}/meta`),{
-      status:"finished",
-      winnerName:winner?.name||"-",
-      finishedAt:serverTimestamp()
-    });
-  }
+ if(!room)return;
+ await runTransaction(ref(db,`timeRooms/${room}`),data=>{
+  if(!data||data.meta?.status!=="playing")return;
+  const players=Object.entries(data.players||{});
+  const previousHost=data.meta.hostId;
+  if(!data.players?.[data.meta.hostId])data.meta.hostId=players[0]?.[0]||"";
+  const alive=players.filter(([,p])=>p.alive);
+  if(alive.length>1)return data.meta.hostId!==previousHost?data:undefined;
+  const winner=alive[0]?.[1]||players.map(([,p])=>p).sort((a,b)=>Number(b.elapsed||0)-Number(a.elapsed||0))[0];
+  data.meta.status="finished";data.meta.winnerName=winner?.name||"참가자 없음";data.meta.finishedAt=serverTimestamp();return data;
+ },{applyLocally:false});
 }
+
 function renderBattleFinished(data){
   const winner=data.meta?.winnerName||"없음";
   $("stateText").textContent="END";
@@ -664,3 +668,4 @@ async function leaveRoom(doConfirm=true){
 </script>
 </body>
 </html>
+
