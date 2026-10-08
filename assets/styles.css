@@ -1,0 +1,97 @@
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#17191f}
+body{
+  background:
+    radial-gradient(650px 420px at 8% -6%, rgba(255,201,124,.28), transparent 60%),
+    radial-gradient(700px 460px at 108% 10%, rgba(124,168,255,.28), transparent 60%),
+    radial-gradient(600px 500px at 50% 120%, rgba(180,140,255,.20), transparent 60%),
+    #f7f8fc;
+  background-attachment:fixed;
+  position:relative;
+  overflow-x:hidden;
+}
+body::before{
+  content:"⏳";
+  position:fixed;
+  right:-60px;
+  bottom:-70px;
+  font-size:280px;
+  opacity:.05;
+  transform:rotate(-12deg);
+  pointer-events:none;
+  z-index:0;
+}
+button,input{font:inherit}
+button{cursor:pointer;transition:transform .12s ease, filter .12s ease, box-shadow .12s ease}
+button:active{transform:scale(.96)}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
+  padding:calc(14px + env(safe-area-inset-top,0px)) 18px 14px;
+  background:rgba(255,255,255,.78);backdrop-filter:blur(14px);border-bottom:1px solid #e8eaf0}
+.logo{font-weight:900;font-size:21px;letter-spacing:-.5px;color:#111;text-decoration:none;display:inline-flex;align-items:center}
+.logo span{display:inline-block;transform:rotate(12deg);margin:0 2px;animation:wobble 2.6s ease-in-out infinite}
+@keyframes wobble{0%,100%{transform:rotate(12deg)}50%{transform:rotate(-6deg) scale(1.08)}}
+.top strong{background:linear-gradient(120deg,#ff9d5c,#7c8cff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px calc(48px + env(safe-area-inset-bottom,0px));position:relative;z-index:1}
+.card{background:#fff;border:1px solid #e6e8ee;border-radius:22px;padding:22px;box-shadow:0 8px 28px rgba(20,30,50,.06);margin-bottom:16px;
+  position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,#ff9d5c,#ff6b9d,#7c8cff,#5ee6c0)}
+h1,h2,h3{margin:0 0 12px}
+h1{display:flex;align-items:center;gap:8px}
+.muted{color:#737887}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+button,.btn{border:0;border-radius:13px;padding:11px 16px;background:#17191f;color:#fff;font-weight:800;
+  box-shadow:0 4px 14px rgba(20,25,40,.18)}
+button:hover{filter:brightness(1.08)}
+button.secondary,.btn.secondary{background:#eef0f5;color:#20232a;box-shadow:none}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+input{width:100%;border:1px solid #dfe2e9;border-radius:13px;padding:12px 13px;outline:none;background:#fff}
+input:focus{border-color:#9aa2b1;box-shadow:0 0 0 3px rgba(100,110,130,.1)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:650px){.grid2{grid-template-columns:1fr}}
+.mode{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.mode button{background:#eef0f5;color:#20232a;box-shadow:none}
+.mode button.active{background:#17191f;color:#fff;box-shadow:0 4px 14px rgba(20,25,40,.18)}
+.hidden{display:none!important}
+.status{padding:10px 12px;border-radius:12px;background:#f1f3f7;color:#555d6d;font-size:14px;margin-top:12px}
+.lobbyPlayers{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.playerBox{border:1px solid #e3e6ed;border-radius:15px;padding:13px;background:#fafbfc;transition:transform .15s ease}
+.playerBox:hover{transform:translateY(-2px)}
+.playerBox .name{font-weight:800}
+.playerBox .state{font-size:13px;color:#747b89;margin-top:5px}
+.gameTop{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat{background:#f4f5f8;border-radius:15px;padding:13px;text-align:center;transition:background .2s ease}
+.stat b{display:block;font-size:23px;margin-top:3px;font-variant-numeric:tabular-nums}
+.stat.danger{background:#fdecec}
+.stat.danger b{color:#e0473e;animation:pulse 0.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.arena{position:relative;height:520px;border:1px solid #dfe2e8;border-radius:22px;overflow:hidden;
+  display:grid;grid-template-columns:repeat(3,1fr);
+  background:linear-gradient(180deg,#ffffff 0%,#f8f9fd 70%,#f1f2f8 100%)}
+.lane{position:relative;border-right:1px dashed #e0e2e8;transition:background .15s ease}
+.lane:last-child{border-right:0}
+.lane.active{background:rgba(23,25,31,.035)}
+.judgeLine{position:absolute;left:0;right:0;top:470px;height:0;border-top:2px dashed #ffb37a;z-index:3;opacity:.75}
+.judgeLine::after{content:"⚡ 판정선";position:absolute;right:8px;top:-19px;font-size:11px;color:#c07a3a;font-weight:800}
+.playerDot{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:44px;height:44px;border-radius:14px;
+  background:linear-gradient(145deg,#2b2f3a,#0f1115);color:#fff;display:grid;place-items:center;font-weight:900;z-index:5;
+  box-shadow:0 6px 16px rgba(15,17,21,.35);transition:left .12s ease}
+.obstacle{position:absolute;left:50%;transform:translateX(-50%);font-size:30px;z-index:4;user-select:none;
+  animation:spin 1.1s ease-in-out infinite alternate;filter:drop-shadow(0 4px 6px rgba(0,0,0,.18))}
+.obstacle.good{filter:drop-shadow(0 0 8px rgba(255,196,80,.75))}
+.obstacle.bad{filter:drop-shadow(0 0 8px rgba(255,90,90,.55))}
+@keyframes spin{0%{transform:translateX(-50%) rotate(-8deg)}100%{transform:translateX(-50%) rotate(8deg)}}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.controlBtn{height:64px;font-size:25px}
+.battlePlayers{margin-top:14px;display:grid;gap:8px}
+.battleRow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:11px 13px;border:1px solid #e4e6ec;border-radius:14px}
+.progress{width:150px;height:9px;background:#e8eaf0;border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,#ff9d5c,#7c8cff);width:50%;transition:width .1s linear}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:11px 8px;border-bottom:1px solid #eceef2}
+th{font-size:13px;color:#777e8d}
+.rank{font-weight:900;width:50px}
+.small{font-size:13px}
+.notice{background:#fff8df;border:1px solid #f2df9a;color:#6d5b18;padding:12px;border-radius:14px;font-size:13px}
+.confetti{position:fixed;top:-40px;font-size:22px;z-index:50;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg);opacity:.15}}
