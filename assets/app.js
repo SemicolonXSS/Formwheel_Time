@@ -371,13 +371,18 @@ async function hostStartBattle(){
   }
 
   const startedAt=serverNow()+1200;
-  // roundSeed alone is enough — every client derives the same obstacle
-  // lanes/timings from it via stepObstacles(), computed on demand, so the
-  // round never runs out no matter how long it lasts.
-  await update(ref(db,`timeRooms/${room}`),{
-    meta:{status:"playing",hostId:playerId,startedAt},
-    game:{status:"playing",startedAt,roundSeed:Math.floor(Math.random()*1e9)}
-  });
+  const result=await runTransaction(ref(db,`timeRooms/${room}`),data=>{
+    if(!data)return null;
+    if(data.meta?.hostId!==playerId||data.meta.status==='playing')return;
+    if(!data.players?.[playerId])return;
+    for(const p of Object.values(data.players||{}))Object.assign(p,{alive:true,lane:1,time:10,elapsed:0,score:0,combo:0,ready:true});
+    delete data.attacks;
+    data.meta={status:'playing',hostId:playerId,startedAt};
+    data.game={status:'playing',startedAt,roundSeed:Math.floor(Math.random()*1e9)};
+    return data;
+  },{applyLocally:false});
+  if(!result.committed)$("battleStatus").textContent='진행 중이거나 방장이 변경되어 시작할 수 없습니다.';
+
 }
 
 function startBattleClient(data){
