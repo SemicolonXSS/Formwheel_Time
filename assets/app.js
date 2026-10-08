@@ -107,7 +107,7 @@ let local = {
   seed:0, processed:null, lastTick:0,points:0,combo:0,charge:0,shield:false
 };
 
-let soloTimer = null;let attackReceipts=new Set();
+let soloTimer = null;let attackReceipts=new Set(),battleFinished=false;
 
 function randomCode(){
   return String(Math.floor(100000 + Math.random()*900000));
@@ -134,7 +134,7 @@ $("leaveRoom").onclick = leaveRoom;
 $("startBattle").onclick = hostStartBattle;
 $("leftBtn").onclick = () => move(-1);
 $("rightBtn").onclick = () => move(1);
-$("retryBtn").onclick=()=>{if(mode==='solo')startSolo();else if(isHost&&!local.alive)hostStartBattle();else $("battleStatus").textContent='방장이 배틀을 다시 시작할 수 있습니다.'};
+$("retryBtn").onclick=()=>{if(mode==='solo')startSolo();else if(isHost&&battleFinished)hostStartBattle();else $("battleStatus").textContent='배틀 종료 후 방장이 다시 시작할 수 있습니다.'};
 function applyPickup(type){if(type==='hourglass'){local.combo++;local.charge++;local.time+=5;local.points+=100+Math.min(10,local.combo)*20}else if(type==='star'){local.time+=3;local.points+=50}else if(type==='shield'){local.shield=true;local.points+=50}else{local.combo=0;if(local.shield)local.shield=false;else local.time-=3}}
 let attackBusy=false;
 $("attackBtn").onclick=async()=>{if(attackBusy||mode!=='battle'||!local.alive||local.charge<3)return;const target=$("attackTarget").value;if(!target||target===playerId)return;attackBusy=true;const id=crypto.randomUUID(),stamp=local.startedAt;local.charge-=3;try{const result=await runTransaction(ref(db,`timeRooms/${room}`),data=>{if(!data||data.meta?.status!=='playing'||data.game?.startedAt!==stamp||!data.players?.[target]?.alive||!data.players?.[playerId]?.alive)return;data.attacks??={};data.attacks[id]={from:playerId,to:target,at:serverNow(),round:stamp};return data});if(!result.committed)local.charge+=3}catch(e){local.charge+=3;window.FormwheelUI?.error(e)}finally{attackBusy=false;updateTimeStat()}};
@@ -146,7 +146,7 @@ window.addEventListener("keydown", e=>{
   if(e.key==="ArrowRight"){e.preventDefault();move(1)}
 });
 
-$("connectionStatus").textContent = "Firebase 연결됨 ✅";
+onValue(ref(db,".info/connected"),snap=>{$("connectionStatus").textContent=snap.val()===true?"Firebase 연결됨 ✅":"Firebase 연결 대기 · 네트워크를 확인하세요."});
 
 const savedName = localStorage.getItem("formwheel_time_name");
 if(savedName){
@@ -207,7 +207,7 @@ function spawnConfetti(){
 let startingSolo=false;
 async function startSolo(){
   if(startingSolo)return;clearInterval(soloTimer);local.alive=false;startingSolo=true;try{if(window.FormwheelUI)await FormwheelUI.countdown(3)}finally{startingSolo=false}
-  mode="solo";
+  mode="solo";$("retryBtn").disabled=false;
   showGame();
   resetArena();
   local={
@@ -381,6 +381,7 @@ async function hostStartBattle(){
 }
 
 function startBattleClient(data){
+  battleFinished=false;$("retryBtn").disabled=true;
   if(local.startedAt===data.game?.startedAt)return;
   showGame();
   resetArena();
@@ -473,6 +474,7 @@ async function checkBattleEnd(){
 }
 
 function renderBattleFinished(data){
+  battleFinished=true;local.alive=false;$("retryBtn").disabled=!isHost;$("attackBtn").disabled=true;
   const winner=data.meta?.winnerName||"없음";
   $("stateText").textContent="END";
   $("battleStatus").classList.remove("hidden");

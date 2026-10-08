@@ -1,6 +1,6 @@
 # Formwheel_Time
 
-제한 시간 안에서 빠르게 행동하는 타임 게임.
+장애물을 피하며 시간을 모으고 점수·콤보·이벤트·공격으로 겨루는 생존 게임.
 
 - 실행: https://semicolonxss.github.io/Formwheel_Time/
 - 프로젝트 목록: https://semicolonxss.github.io/Formwheel/
