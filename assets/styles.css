@@ -28,8 +28,6 @@ button:active{transform:scale(.96)}
   padding:calc(14px + env(safe-area-inset-top,0px)) 18px 14px;
   background:rgba(255,255,255,.78);backdrop-filter:blur(14px);border-bottom:1px solid #e8eaf0}
 .logo{font-weight:900;font-size:21px;letter-spacing:-.5px;color:#111;text-decoration:none;display:inline-flex;align-items:center}
-.logo span{display:inline-block;transform:rotate(12deg);margin:0 2px;animation:wobble 2.6s ease-in-out infinite}
-@keyframes wobble{0%,100%{transform:rotate(12deg)}50%{transform:rotate(-6deg) scale(1.08)}}
 .top strong{background:linear-gradient(120deg,#ff9d5c,#7c8cff);-webkit-background-clip:text;background-clip:text;color:transparent}
 .wrap{max-width:900px;margin:0 auto;padding:24px 16px calc(48px + env(safe-area-inset-bottom,0px));position:relative;z-index:1}
 .card{background:#fff;border:1px solid #e6e8ee;border-radius:22px;padding:22px;box-shadow:0 8px 28px rgba(20,30,50,.06);margin-bottom:16px;
