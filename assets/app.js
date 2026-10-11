@@ -239,6 +239,7 @@ async function startSolo(){
   },50);
 }
 function finishSolo(){
+  window.dispatchEvent(new CustomEvent("fw:4050:complete",{detail:{gameId:"time"}}));
   if(!local.alive)return;
   local.alive=false;
   clearInterval(soloTimer);
