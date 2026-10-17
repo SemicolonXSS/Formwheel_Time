@@ -247,6 +247,7 @@ function finishSolo(){
   $("battleStatus").classList.remove("hidden");
   $("battleStatus").textContent="🏁 기록: "+local.elapsed.toFixed(2)+"초 · "+(Math.floor(local.elapsed*10)+local.points)+"점";
   spawnConfetti();
+  if(window.opener && !window.opener.closed)window.opener.postMessage({type:"formwheel-spotlight-result-v1",project:"Time",value:local.elapsed},"https://semicolonxss.github.io");
   saveLeaderboard(local.elapsed);
   window.FormwheelUI?.result("⏱️ Solo 결과",local.elapsed.toFixed(2)+"초 · "+(Math.floor(local.elapsed*10)+local.points)+"점",startSolo);
 }
