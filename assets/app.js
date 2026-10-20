@@ -142,8 +142,8 @@ $("attackBtn").onclick=async()=>{if(attackBusy||mode!=='battle'||!local.alive||l
 
 window.addEventListener("keydown", e=>{
   if(e.target.matches("input,textarea,select"))return;
-  if(e.key==="ArrowLeft"){e.preventDefault();move(-1)}
-  if(e.key==="ArrowRight"){e.preventDefault();move(1)}
+  if(e.key==="ArrowLeft"||e.key.toLowerCase()==="a"){e.preventDefault();move(-1)}
+  if(e.key==="ArrowRight"||e.key.toLowerCase()==="d"){e.preventDefault();move(1)}
 });
 
 onValue(ref(db,".info/connected"),snap=>{$("connectionStatus").textContent=snap.val()===true?"Firebase 연결됨 ✅":"Firebase 연결 대기 · 네트워크를 확인하세요."});
