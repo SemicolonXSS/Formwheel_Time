@@ -110,10 +110,10 @@ let local = {
 let soloTimer = null;let attackReceipts=new Set(),battleFinished=false;
 
 function randomCode(){
-  return String(Math.floor(100000 + Math.random()*900000));
+  return String(100000 + crypto.getRandomValues(new Uint32Array(1))[0] % 900000);
 }
 function randomId(){
-  return "p_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8);
+  return "p_" + crypto.randomUUID().replace(/-/g,"").slice(0,20);
 }
 
 $("soloMode").onclick = () => setMode("solo");
