@@ -30,19 +30,19 @@
     </div>
 
     <div id="soloSetup">
-      <label class="small">닉네임 (리더보드용)</label>
-      <input id="soloNickname" maxlength="12" placeholder="최대 12자" style="margin-bottom:10px">
+      <label class="small" for="soloNickname">닉네임 (리더보드용)</label>
+      <input id="soloNickname" autocomplete="nickname" maxlength="12" placeholder="최대 12자" style="margin-bottom:10px">
       <button id="soloStart">▶️ Solo 시작</button>
     </div>
 
     <div id="battleSetup" class="hidden">
       <div class="grid2">
         <div>
-          <label class="small">닉네임</label>
-          <input id="nickname" maxlength="12" placeholder="최대 12자">
+          <label class="small" for="nickname">닉네임</label>
+          <input id="nickname" autocomplete="nickname" maxlength="12" placeholder="최대 12자">
         </div>
         <div>
-          <label class="small">방 코드</label>
+          <label class="small" for="roomCode">방 코드</label>
           <input id="roomCode" maxlength="6" inputmode="numeric" placeholder="6자리 코드">
         </div>
       </div>
@@ -76,8 +76,8 @@
       <div id="myDot" class="playerDot">YOU</div>
     </div>
     <div class="controls">
-      <button class="controlBtn" id="leftBtn">←</button>
-      <button class="controlBtn" id="rightBtn">→</button>
+      <button class="controlBtn" id="leftBtn" aria-label="왼쪽으로 이동">←</button>
+      <button class="controlBtn" id="rightBtn" aria-label="오른쪽으로 이동">→</button>
     </div>
     <div class="status" id="scoreStatus">점수 0 · 콤보 0</div><div class="row"><select id="attackTarget" aria-label="공격 대상"></select><button id="attackBtn" class="secondary">⚡ 공격 (충전 3)</button><button id="retryBtn" class="secondary">다시 시작</button></div><p class="small muted">모래시계 연속 획득으로 콤보와 공격 충전을 얻습니다. 12초마다 별(시간 +3) 또는 방패(장애물 1회 방어)가 등장합니다. 공격은 충전 3개를 써 상대 시간을 2초 줄입니다.</p>
     <div id="battleStatus" class="status hidden"></div>
