@@ -127,6 +127,22 @@ function setMode(m){
   $("battleSetup").classList.toggle("hidden",m!=="battle");
 }
 
+// 세랜 2탄: 현재 배틀 방의 6자리 코드만 복사 (방 상태/DB 변경 없음)
+$("copyRoomCode").onclick = async () => {
+  const code = $("roomCodeDisplay").textContent.trim();
+  const status = $("copyCodeStatus");
+  if (!/^\\d{6}$/.test(code) || !room || code !== room) {
+    status.textContent = "먼저 배틀 방을 만들거나 참가해 주세요.";
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(code);
+    status.textContent = "✅ 방 코드가 복사됐어요! 친구에게 보내세요.";
+  } catch (e) {
+    status.textContent = "자동 복사가 제한됐어요. 위 6자리 코드를 길게 눌러 복사해 주세요.";
+  }
+};
+
 $("soloStart").onclick = startSolo;
 $("createRoom").onclick = createRoom;
 $("joinRoom").onclick = joinRoom;
@@ -158,6 +174,7 @@ function showGame(){
   window.scrollTo({top:$("gameCard").offsetTop-10,behavior:"smooth"});
 }
 function showHome(){
+  $("copyCodeStatus").textContent="";
   $("gameCard").classList.add("hidden");
 }
 function renderLane(){
@@ -338,6 +355,7 @@ async function joinRoom(){
   enterLobby();
 }
 function enterLobby(){
+  $("copyCodeStatus").textContent="";
   $("lobby").classList.remove("hidden");
   $("leaveRoom").classList.remove("hidden");
   $("hostControls").classList.toggle("hidden",!isHost);
