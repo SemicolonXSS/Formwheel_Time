@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f7f8fc">
 <title>Time</title>
-<link rel="stylesheet" href="./assets/styles.css?v=20261008-logo2">
+<link rel="stylesheet" href="./assets/styles.css?v=20261023-seran2">
 <link rel="stylesheet" href="https://semicolonxss.github.io/Formwheel/shared/formwheel-ui.css">
 <script defer src="https://semicolonxss.github.io/Formwheel/shared/formwheel-ui.js?v=20261012-matchnotutorial"></script>
 <meta property="og:title" content="Time · Formwheel">
@@ -54,7 +54,7 @@
       <div id="connectionStatus" class="status">Firebase 연결 중...</div>
       <div id="lobby" class="hidden">
         <h3 style="margin-top:18px">👥 대기실</h3>
-        <div>방 코드: <b id="roomCodeDisplay">-</b></div>
+        <div class="roomShare">방 코드: <b id="roomCodeDisplay">-</b> <button id="copyRoomCode" class="secondary" type="button" aria-label="방 코드 복사">📋 코드 복사</button></div><div id="copyCodeStatus" class="small muted" role="status" aria-live="polite"></div>
         <div id="players" class="lobbyPlayers"></div>
         <div id="hostControls" class="row hidden">
           <button id="startBattle">🚀 배틀 시작</button>
@@ -75,6 +75,7 @@
       <div class="judgeLine"></div>
       <div id="myDot" class="playerDot">YOU</div>
     </div>
+    <p class="small muted controlHint">🎮 조작: ← → 방향키 또는 A / D · 모바일에서는 아래 버튼을 누르세요.</p>
     <div class="controls">
       <button class="controlBtn" id="leftBtn" aria-label="왼쪽으로 이동">←</button>
       <button class="controlBtn" id="rightBtn" aria-label="오른쪽으로 이동">→</button>
@@ -91,7 +92,7 @@
   </section>
 </main>
 
-<script type="module" src="./assets/app.js?v=20261021-random5"></script>
+<script type="module" src="./assets/app.js?v=20261023-seran2"></script>
 <script type="module" src="https://semicolonxss.github.io/Formwheel/shared/challenge-4050.js?v=20261011"></script>
 <script type="module" src="https://semicolonxss.github.io/Formwheel/assets/live-presence.js?v=20261017-duration"></script>
 <script type="module" src="https://semicolonxss.github.io/Formwheel/shared/match-bridge.js?v=20261012-hideguide"></script></body>
