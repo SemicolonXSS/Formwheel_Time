@@ -93,3 +93,10 @@ th{font-size:13px;color:#777e8d}
 .notice{background:#fff8df;border:1px solid #f2df9a;color:#6d5b18;padding:12px;border-radius:14px;font-size:13px}
 .confetti{position:fixed;top:-40px;font-size:22px;z-index:50;pointer-events:none;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(360deg);opacity:.15}}
+
+/* 세랜 2탄: 배틀 코드 공유와 조작법 가독성 */
+.roomShare{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:8px}
+.roomShare b{font-variant-numeric:tabular-nums;letter-spacing:.09em;font-size:19px;user-select:all}
+.roomShare button{padding:8px 12px;font-size:13px}
+.controlHint{margin:14px 0 0;line-height:1.6}
+@media(prefers-reduced-motion:reduce){.obstacle,.confetti,.stat.danger b{animation:none!important}}
