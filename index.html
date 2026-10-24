@@ -98,7 +98,11 @@
 <script type="module" src="./assets/app.js?v=20261023-seran2"></script>
 <script type="module" src="https://semicolonxss.github.io/Formwheel/shared/challenge-4050.js?v=20261011"></script>
 <script type="module" src="https://semicolonxss.github.io/Formwheel/assets/live-presence.js?v=20261017-duration"></script>
-<script type="module" src="https://semicolonxss.github.io/Formwheel/shared/match-bridge.js?v=20261012-hideguide"></script></body>
+<script type="module" src="https://semicolonxss.github.io/Formwheel/shared/match-bridge.js?v=20261012-hideguide"></script>
+<style id="secol-share-style">#secol-share-link{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));z-index:8000;border:1px solid #aab3c4;border-radius:999px;padding:9px 13px;background:#fff;color:#172033;font:600 13px system-ui;box-shadow:0 2px 10px #0002;cursor:pointer}#secol-share-link:focus-visible{outline:3px solid #e87920;outline-offset:3px}#secol-share-status{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}</style>
+<button type="button" id="secol-share-link" aria-label="현재 프로젝트 링크 공유">🔗 공유</button><span id="secol-share-status" role="status" aria-live="polite"></span>
+<script>(function(){const b=document.getElementById('secol-share-link'),status=document.getElementById('secol-share-status');if(!b||!status)return;b.addEventListener('click',async()=>{const url=location.origin+location.pathname;try{if(navigator.share){await navigator.share({title:document.title,url});status.textContent='공유 메뉴를 열었습니다.';return}if(navigator.clipboard&&isSecureContext){await navigator.clipboard.writeText(url);status.textContent='프로젝트 주소가 복사되었습니다.';b.textContent='✓ 복사됨';setTimeout(()=>b.textContent='🔗 공유',2000);return}window.prompt('프로젝트 주소를 복사하세요',url);status.textContent='주소를 확인하세요.'}catch(e){if(e.name!=='AbortError'){window.prompt('프로젝트 주소를 복사하세요',url);status.textContent='주소를 확인하세요.'}}})})();</script>
+</body>
 </html>
 
 
