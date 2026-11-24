@@ -36,7 +36,7 @@ button:active{transform:scale(.96)}
   background:linear-gradient(90deg,#ff9d5c,#ff6b9d,#7c8cff,#5ee6c0)}
 h1,h2,h3{margin:0 0 12px}
 h1{display:flex;align-items:center;gap:8px}
-.muted{color:#737887}
+.muted{color:#626878}
 .row{display:flex;gap:10px;flex-wrap:wrap}
 button,.btn{border:0;border-radius:13px;padding:11px 16px;background:#17191f;color:#fff;font-weight:800;
   box-shadow:0 4px 14px rgba(20,25,40,.18)}
